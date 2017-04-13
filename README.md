@@ -1,6 +1,6 @@
 # AM_Trabalho
 
-Pasta de trabalho para apresentação de projeto em Aprendizado de Máquina.
+Workbook for project presentation in Machine Learning.
 
 Dataset: Wine Quality (http://archive.ics.uci.edu/ml/datasets/Wine+Quality)
 
