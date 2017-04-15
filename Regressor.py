@@ -1,7 +1,7 @@
 import csv
 import numpy as np
 from sklearn import linear_model
-from sklearn.preprocessing import normalize
+from sklearn.model_selection import KFold
 
 #Lendo a base de dados de um arquivo csv
 csv_file_object = csv.reader(open('winequality-white.csv'), 
@@ -15,34 +15,49 @@ data = np.array(data)
 #Separando os atributos das etiquetas
 X = data[1:,:11]
 X = X.astype(np.float)
-Y = data[1:,11]
-Y = Y.astype(np.float)
+y = data[1:,11]
+y = y.astype(np.float)
 
 #Normalizando a amplitude
 norm_x = X / X.max(axis=0)
 
 #Separando o conjunto de treinamento do de teste
-X_train = X[:-1200]
-X_test = X[-1200:]
 
-print('Tamanho do conjunto de treinamento: \n', len(X_train))
-print('Tamanho do conjunto de teste: \n', len(X_test))
+kf = KFold(n_splits=10)
+kf.get_n_splits(norm_x)
+print(kf)
+errs = []
 
-Y_train = Y[:-1200]
-Y_test = Y[-1200:]
+for train_index, test_index in kf.split(norm_x):
+	X_train, X_test = norm_x[train_index], norm_x[test_index]
+	y_train, y_test = y[train_index], y[test_index]
 
-#Criando o modelo de regressão linear
-regr = linear_model.LinearRegression()
+	#Criando o modelo de regressão linear
+	regr = linear_model.LinearRegression()
 
-#Treinando o modelo na base de treinamento
-regr.fit(X_train, Y_train)
+	#Treinando o modelo na base de treinamento
+	regr.fit(X_train, y_train)
 
-#Coeficientes da reta aprendida
-print('Coefficients: \n', regr.coef_)
+	#Erro médio quadrático
+	err = np.mean((regr.predict(X_test) - y_test) ** 2)
+	print("Mean squared error: %.2f"
+	      % err)
 
-#Erro médio quadrático
-print("Mean squared error: %.2f"
-      % np.mean((regr.predict(X_test) - Y_test) ** 2))
+	#Pontuação em variancia explicada: 1 é uma previsão perfeita
+	var = regr.score(X_test, y_test)
+	print('Variance score: %.2f' % var)
 
-#Pontuação em variancia explicada: 1 é uma previsão perfeita
-print('Variance score: %.2f' % regr.score(X_test, Y_test))
+	errs.append((err, var))
+
+sumx = 0
+sumy = 0
+
+for (x,y) in errs:
+	sumx += x
+	sumy += y
+
+mean_err = sumx/len(errs)
+mean_var= sumy/len(errs)
+
+print("Erro médio: ", mean_err)
+print("Variância média: ", mean_var)
