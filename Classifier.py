@@ -1,6 +1,6 @@
 import csv
 import numpy as np
-from sklearn import linear_model
+from sklearn import svm
 from sklearn.model_selection import KFold
 
 ###Pré processamento dos dados
@@ -29,40 +29,31 @@ norm_x = X / X.max(axis=0)
 kf = KFold(n_splits=10)
 kf.get_n_splits(norm_x)
 print(kf)
-errs = []
+scrs = []
+C = 1.0
 
 for train_index, test_index in kf.split(norm_x):
 	X_train, X_test = norm_x[train_index], norm_x[test_index]
 	y_train, y_test = y[train_index], y[test_index]
 
 	#Criando o modelo de regressão linear
-	regr = linear_model.LinearRegression()
-
+	clf = svm.SVC(kernel='linear', C=C)
 	#Treinando o modelo na base de treinamento
-	regr.fit(X_train, y_train)
+	clf.fit(X_train, y_train)
+	#Desempenho na base de teste
+	score = clf.score(X_test, y_test)
+	print("Score: %.2f" % score)
 
-	#RSS
-	err = np.sum((regr.predict(X_test) - y_test) ** 2)
-	print("RSS: %.2f" % err)
-
-	#Pontuação em variancia explicada: 1 é uma previsão perfeita
-	var = regr.score(X_test, y_test)
-	print('R^2: %.2f' % var)
-
-	errs.append((err, var))
+	scrs.append(score)
 
 ###Resultados
 
 #Média dos erros das 10 iterações
 sumx = 0
-sumy = 0
 
-for (x,y) in errs:
+for x in scrs:
 	sumx += x
-	sumy += y
 
-mean_err = sumx/len(errs)
-mean_var= sumy/len(errs)
+mean_scr = sumx/len(scrs)
 
-print("RSS médio: %.2f" % mean_err)
-print("R^2 médio: %.2f" % mean_var)
+print("Score médio: %.2f" % mean_scr)
