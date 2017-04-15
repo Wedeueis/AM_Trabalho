@@ -13,7 +13,7 @@ Modificações
 - O algoritmo do modelo foi modificado para regressão linear(por enquanto)
 
 Para fazer
-- Implementar o k-fold cross validation 
+- Implementar o k-fold cross validation -feito
 - Implementar a seleção de atributos
 - Outros testes/algoritmos
 - Relatório

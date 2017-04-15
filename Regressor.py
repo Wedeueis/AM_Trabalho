@@ -3,6 +3,8 @@ import numpy as np
 from sklearn import linear_model
 from sklearn.model_selection import KFold
 
+###Pré processamento dos dados
+
 #Lendo a base de dados de um arquivo csv
 csv_file_object = csv.reader(open('winequality-white.csv'), 
 						delimiter=',', quotechar='"')
@@ -21,8 +23,10 @@ y = y.astype(np.float)
 #Normalizando a amplitude
 norm_x = X / X.max(axis=0)
 
-#Separando o conjunto de treinamento do de teste
 
+###Treinamento e teste do modelo
+
+#10-fold Cross Validation
 kf = KFold(n_splits=10)
 kf.get_n_splits(norm_x)
 print(kf)
@@ -49,6 +53,9 @@ for train_index, test_index in kf.split(norm_x):
 
 	errs.append((err, var))
 
+###Resultados
+
+#Média dos erros das 10 iterações
 sumx = 0
 sumy = 0
 
