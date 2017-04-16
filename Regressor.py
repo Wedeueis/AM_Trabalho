@@ -27,9 +27,10 @@ for row in csv_file_object:
 data = np.array(data)
 
 #Separando os atributos das etiquetas
-X = data[:,:11]
+s = len(data[0])-1
+X = data[:,:s]
 X = X.astype(np.float)
-y = data[:,11]
+y = data[:,s]
 y = y.astype(np.float)
 
 #Normalizando a amplitude
@@ -43,8 +44,8 @@ kf.get_n_splits(norm_x)
 print(kf)
 errs = []
 
-for train_index, test_index in kf.split(new_x):
-	X_train, X_test = new_x[train_index], new_x[test_index]
+for train_index, test_index in kf.split(norm_x):
+	X_train, X_test = norm_x[train_index], norm_x[test_index]
 	y_train, y_test = y[train_index], y[test_index]
 
 	#Criando o modelo de regressão linear

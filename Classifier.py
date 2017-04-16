@@ -41,7 +41,7 @@ norm_x = X / X.max(axis=0)
 
 errs = []
 #Laço para encontrar os k melhores atributos
-for k in range(1,11):
+for k in range(1,s):
 	#10-fold Cross Validation
 	kf = KFold(n_splits=10,shuffle=True)
 	print(kf)
