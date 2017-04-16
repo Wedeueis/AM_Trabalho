@@ -4,6 +4,7 @@ from sklearn import svm
 from sklearn.model_selection import KFold
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.feature_selection import SelectFromModel
+import sys
 
 ###Pré processamento dos dados
 

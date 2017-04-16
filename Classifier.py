@@ -3,6 +3,7 @@ import numpy as np
 from sklearn import svm
 from sklearn.model_selection import KFold
 from sklearn.feature_selection import SelectKBest, chi2
+import sys
 
 ###Pré processamento dos dados
 

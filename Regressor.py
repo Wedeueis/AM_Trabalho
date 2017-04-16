@@ -2,6 +2,7 @@ import csv
 import numpy as np
 from sklearn import linear_model
 from sklearn.model_selection import KFold
+import sys
 
 ###Pré processamento dos dados
 
