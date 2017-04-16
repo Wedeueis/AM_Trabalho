@@ -3,6 +3,7 @@ import numpy as np
 from sklearn import svm
 from sklearn.model_selection import KFold
 from sklearn.feature_selection import SelectKBest, chi2
+from sklearn.model_selection import GridSearchCV
 import sys
 
 ###Pré processamento dos dados
@@ -39,15 +40,15 @@ norm_x = X / X.max(axis=0)
 
 ###Treinamento e teste do modelo
 
-errs = []
 #Laço para encontrar os k melhores atributos
-for k in range(1,s):
+kf = KFold(n_splits=10,shuffle=True)
+print(kf)
+print()
+scrs = []
+C = 1.0
+errs = []
+for k in range(1,s+1):
 	#10-fold Cross Validation
-	kf = KFold(n_splits=10,shuffle=True)
-	print(kf)
-	scrs = []
-	C = 1.0
-
 	new_x = SelectKBest(chi2, k=k).fit_transform(norm_x, y)
 
 	for train_index, test_index in kf.split(new_x):
@@ -60,11 +61,9 @@ for k in range(1,s):
 		clf.fit(X_train, y_train)
 		#Desempenho na base de teste
 		score = clf.score(X_test, y_test)
-		print("Score: %.2f" % score)
+		#print("Score: %.2f" % score)
 
 		scrs.append(score)
-
-	###Resultados
 
 	#Média dos erros das 10 iterações
 	sumx = 0
@@ -76,6 +75,23 @@ for k in range(1,s):
 
 	errs.append(mean_scr)
 
-	print("Score médio: %.2f" % mean_scr)
+	print("Score médio para o(s)", k, "melhor(es) atributo(s): %.2f" % mean_scr)
+	print()
 
-print(errs)
+print("Erros para o i+1 atributos principais: \n", errs)
+
+#Seleção de modelo: Busca dos melhores hiperparametros
+max_ind = np.argmax(errs)
+
+parameters = {'kernel':('linear', 'rbf'), 'C':[1, 10, 100]}
+
+new_x = SelectKBest(chi2, k=max_ind).fit_transform(norm_x, y)
+
+svr = svm.SVC()
+grid = GridSearchCV(svr, parameters, cv=10)
+grid.fit(norm_x, y)
+print()
+print("Modelo final:")
+print("Melhor score alcançado: %.2f" % grid.best_score_)
+print("Parametros encontrados: ", grid.best_params_)
+print()
