@@ -1,8 +1,9 @@
 import csv
 import numpy as np
-from sklearn import svm
+from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import KFold
 from sklearn.feature_selection import SelectKBest, chi2
+import sys
 
 ###Pré processamento dos dados
 
@@ -20,6 +21,7 @@ try:
 except IOError:
     print("File %s doesn't exist" % fname)
     exit(1)
+
 data = []
 for row in csv_file_object:
 	data.append(row)
@@ -40,7 +42,7 @@ norm_x = X / X.max(axis=0)
 
 errs = []
 #Laço para encontrar os k melhores atributos
-for k in range(1,11):
+for k in range(1,s):
 	#10-fold Cross Validation
 	kf = KFold(n_splits=10,shuffle=True)
 	print(kf)
@@ -54,7 +56,7 @@ for k in range(1,11):
 		y_train, y_test = y[train_index], y[test_index]
 
 		#Criando o modelo de regressão linear
-		clf = svm.SVC(kernel='linear', C=C)
+		clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 2), random_state=1)
 		#Treinando o modelo na base de treinamento
 		clf.fit(X_train, y_train)
 		#Desempenho na base de teste
@@ -77,4 +79,5 @@ for k in range(1,11):
 
 	print("Score médio: %.2f" % mean_scr)
 
-print(errs)
+for i in errs:
+	print ("%0.2f" % i )

@@ -6,8 +6,19 @@ from sklearn.model_selection import KFold
 ###Pré processamento dos dados
 
 #Lendo a base de dados de um arquivo csv
-csv_file_object = csv.reader(open('winequality-red.csv'), 
-						delimiter=',', quotechar='"')
+if len(sys.argv) != 2:
+    print("Please inform the filename")
+    exit(1)
+
+fname = sys.argv[1]
+
+try:
+    #Lendo a base de dados de um arquivo csv
+	csv_file_object = csv.reader(open(fname),
+							delimiter=',', quotechar='"')
+except IOError:
+    print("File %s doesn't exist" % fname)
+    exit(1)
 data = []
 for row in csv_file_object:
 	data.append(row)
@@ -31,8 +42,8 @@ kf.get_n_splits(norm_x)
 print(kf)
 errs = []
 
-for train_index, test_index in kf.split(norm_x):
-	X_train, X_test = norm_x[train_index], norm_x[test_index]
+for train_index, test_index in kf.split(new_x):
+	X_train, X_test = new_x[train_index], new_x[test_index]
 	y_train, y_test = y[train_index], y[test_index]
 
 	#Criando o modelo de regressão linear
