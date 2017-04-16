@@ -15,9 +15,10 @@ for row in csv_file_object:
 data = np.array(data)
 
 #Separando os atributos das etiquetas
-X = data[:,:11]
+k = len(data[0])-1
+X = data[:,:k]
 X = X.astype(np.float)
-y = data[:,11]
+y = data[:,k]
 y = y.astype(np.float)
 
 #Normalizando a amplitude
@@ -26,8 +27,7 @@ norm_x = X / X.max(axis=0)
 ###Treinamento e teste do modelo
 
 #10-fold Cross Validation
-kf = KFold(n_splits=10)
-kf.get_n_splits(norm_x)
+kf = KFold(n_splits=10,shuffle=True)
 print(kf)
 scrs = []
 C = 1.0
