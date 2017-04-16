@@ -6,7 +6,7 @@ from sklearn.model_selection import KFold
 ###Pré processamento dos dados
 
 #Lendo a base de dados de um arquivo csv
-csv_file_object = csv.reader(open('winequality-white.csv'), 
+csv_file_object = csv.reader(open('winequality-red.csv'), 
 						delimiter=',', quotechar='"')
 data = []
 for row in csv_file_object:

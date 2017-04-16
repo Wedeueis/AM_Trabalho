@@ -1,0 +1,69 @@
+import csv
+import numpy as np
+from sklearn import svm
+from sklearn.model_selection import KFold
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.feature_selection import SelectFromModel
+
+###Pré processamento dos dados
+
+#Lendo a base de dados de um arquivo csv
+csv_file_object = csv.reader(open('winequality-white.csv'), 
+						delimiter=',', quotechar='"')
+data = []
+for row in csv_file_object:
+	data.append(row)
+
+data = np.array(data)
+
+#Separando os atributos das etiquetas
+s = len(data[0])-1
+X = data[:,:s]
+X = X.astype(np.float)
+y = data[:,s]
+y = y.astype(np.float)
+
+#Normalizando a amplitude
+norm_x = X / X.max(axis=0)
+
+###Treinamento e teste do modelo
+
+#Laço para encontrar os k melhores atributos
+
+#10-fold Cross Validation
+kf = KFold(n_splits=10,shuffle=True)
+print(kf)
+scrs = []
+C = 1.0
+
+tree = ExtraTreesClassifier()
+tree = tree.fit(norm_x, y)
+model = SelectFromModel(tree, prefit=True)
+new_x = model.transform(norm_x)
+print(new_x.shape)
+
+for train_index, test_index in kf.split(new_x):
+	X_train, X_test = new_x[train_index], new_x[test_index]
+	y_train, y_test = y[train_index], y[test_index]
+
+	#Criando o modelo de regressão linear
+	clf = svm.SVC(kernel='linear', C=C)
+	#Treinando o modelo na base de treinamento
+	clf.fit(X_train, y_train)
+	#Desempenho na base de teste
+	score = clf.score(X_test, y_test)
+	print("Score: %.2f" % score)
+
+	scrs.append(score)
+
+###Resultados
+
+#Média dos erros das 10 iterações
+sumx = 0
+
+for x in scrs:
+	sumx += x
+
+mean_scr = sumx/len(scrs)
+
+print("Score médio: %.2f" % mean_scr)
