@@ -81,19 +81,3 @@ for k in range(1,s+1):
 
 #print("Erros para o i+1 atributos principais: \n", errs)
 plt.plot(errs)
-
-#Seleção de modelo: Busca dos melhores hiperparametros
-max_ind = np.argmax(errs)
-
-parameters = {'kernel':('linear', 'rbf'), 'C':[1, 10, 100]}
-
-new_x = SelectKBest(f_classif, k=max_ind).fit_transform(norm_x, y)
-
-svr = svm.SVC()
-grid = GridSearchCV(svr, parameters, cv=10)
-grid.fit(new_x, y)
-print()
-print("Modelo final:")
-print("Melhor score alcançado: %.2f" % grid.best_score_)
-print("Parametros encontrados: ", grid.best_params_)
-print()
