@@ -2,8 +2,9 @@ import csv
 import numpy as np
 from sklearn import svm
 from sklearn.model_selection import KFold
-from sklearn.feature_selection import SelectKBest, chi2
+from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.model_selection import GridSearchCV
+import matplotlib.pyplot as plt
 import sys
 
 ###Pré processamento dos dados
@@ -49,7 +50,7 @@ C = 1.0
 errs = []
 for k in range(1,s+1):
 	#10-fold Cross Validation
-	new_x = SelectKBest(chi2, k=k).fit_transform(norm_x, y)
+	new_x = SelectKBest(f_classif, k=k).fit_transform(norm_x, y)
 
 	for train_index, test_index in kf.split(new_x):
 		X_train, X_test = new_x[train_index], new_x[test_index]
@@ -78,18 +79,19 @@ for k in range(1,s+1):
 	print("Score médio para o(s)", k, "melhor(es) atributo(s): %.2f" % mean_scr)
 	print()
 
-print("Erros para o i+1 atributos principais: \n", errs)
+#print("Erros para o i+1 atributos principais: \n", errs)
+plt.plot(errs)
 
 #Seleção de modelo: Busca dos melhores hiperparametros
 max_ind = np.argmax(errs)
 
 parameters = {'kernel':('linear', 'rbf'), 'C':[1, 10, 100]}
 
-new_x = SelectKBest(chi2, k=max_ind).fit_transform(norm_x, y)
+new_x = SelectKBest(f_classif, k=max_ind).fit_transform(norm_x, y)
 
 svr = svm.SVC()
 grid = GridSearchCV(svr, parameters, cv=10)
-grid.fit(norm_x, y)
+grid.fit(new_x, y)
 print()
 print("Modelo final:")
 print("Melhor score alcançado: %.2f" % grid.best_score_)
