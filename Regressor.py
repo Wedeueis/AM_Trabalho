@@ -2,6 +2,9 @@ import csv
 import numpy as np
 from sklearn import linear_model
 from sklearn.model_selection import KFold
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.neighbors import KNeighborsRegressor
+import matplotlib.pyplot as plt
 import sys
 
 ###Pré processamento dos dados
@@ -40,8 +43,6 @@ norm_x = X / X.max(axis=0)
 
 #10-fold Cross Validation
 kf = KFold(n_splits=10)
-kf.get_n_splits(norm_x)
-print(kf)
 errs = []
 
 for train_index, test_index in kf.split(norm_x):
@@ -49,7 +50,9 @@ for train_index, test_index in kf.split(norm_x):
 	y_train, y_test = y[train_index], y[test_index]
 
 	#Criando o modelo de regressão linear
-	regr = linear_model.LinearRegression()
+	#regr = linear_model.LinearRegression()
+	#regr = DecisionTreeRegressor(max_depth=new_x.shape[1])
+	regr = KNeighborsRegressor(n_neighbors=22)
 
 	#Treinando o modelo na base de treinamento
 	regr.fit(X_train, y_train)
